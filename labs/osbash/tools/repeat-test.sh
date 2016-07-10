@@ -7,7 +7,17 @@ source "$CONFIG_DIR/deploy.osbash"
 source "$OSBASH_LIB_DIR/functions-host.sh"
 source "$OSBASH_LIB_DIR/$PROVIDER-functions.sh"
 
-OSBASH=exec_cmd
+if [ -f "$TOP_DIR/osbash.sh" ]; then
+    BUILD_EXE=$TOP_DIR/osbash.sh
+    OSBASH=exec_cmd
+elif [ -f "$TOP_DIR/st.py" ]; then
+    BUILD_EXE=$TOP_DIR/st.py
+else
+    echo "No build exe found."
+    exit 1
+fi
+
+echo "Using $BUILD_EXE"
 
 LOG_NAME=test.log
 RESULTS_ROOT=$LOG_DIR/test-results
@@ -27,7 +37,7 @@ function usage {
     echo "-r REP    Number of repetitions (default: endless loop)"
     echo "-s NODES  Start each named node VM after restoring the cluster"
     echo "-b        Rebuild cluster for each test, from scratch or snapshot"
-    echo "          (osbash.sh -b cluster [...])"
+    echo "          ($(basename $BUILD_EXE) -b cluster [...])"
 }
 
 while getopts :bchr:s:t: opt; do
@@ -118,9 +128,9 @@ until [ $cnt -eq $REP ]; do
     rc=0
     if [ -n "${REBUILD:-}" ]; then
         if [ -n "${TARGET_SNAPSHOT:-}" ]; then
-            LEAVE_VMS_RUNNING=yes "$TOP_DIR/osbash.sh" -t "$TARGET_SNAPSHOT" -b cluster || rc=$?
+            LEAVE_VMS_RUNNING=yes "$BUILD_EXE" -t "$TARGET_SNAPSHOT" -b cluster || rc=$?
         else
-            "$TOP_DIR/osbash.sh" -b cluster || rc=$?
+            "$BUILD_EXE" -b cluster || rc=$?
         fi
     fi
     echo "####################################################################"
