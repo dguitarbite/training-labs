@@ -12,10 +12,9 @@ import stacktrain.config.virtualbox as cvb
 import stacktrain.virtualbox.vm_create as vm
 import stacktrain.core.functions_host as host
 
-# TODO this is only init_node, no other code -> rename; also, could vm_init node
-# become generic enough for base_disk install?
+# TODO could vm_create_code become generic enough for base_disk install?
 
-def vm_init_node(vm_name):
+def vm_create_node(vm_name):
 
     try:
         vm_config = conf.vm[vm_name]

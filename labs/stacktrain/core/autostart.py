@@ -190,6 +190,13 @@ def command_from_config(line):
             host.vm_conditional_snapshot(vm_name, shot_name)
         else:
             print("Syntax error.")
+    elif args[0] == "shutdown":
+        if args[1] == "-n":
+            vm_name = args[2]
+            vm.vm_acpi_shutdown(vm_name)
+            vm.vm_wait_for_shutdown(vm_name)
+        else:
+            print("Syntax error.")
     elif args[0] == "wait_for_shutdown":
         if args[1] == "-n":
             vm_name = args[2]
@@ -209,11 +216,17 @@ def command_from_config(line):
             host.vm_conditional_snapshot(vm_name, shot_name)
         else:
             print("Syntax error.")
-    elif args[0] == "init_node":
+    elif args[0] == "create_node":
         if args[1] == "-n":
             vm_name = args[2]
             conf.vm[vm_name] = conf.VMconfig(vm_name)
-            inst_node.vm_init_node(vm_name)
+            inst_node.vm_create_node(vm_name)
+        else:
+            print("Syntax error.")
+    elif args[0] == "queue_renamed":
+        if args[1] == "-n":
+            vm_name = args[2]
+            conf.vm[vm_name] = conf.VMconfig(vm_name)
             autostart_queue_and_rename("osbash", "init_xxx_node.sh",
                                        "init_{}_node.sh".format(vm_name))
         else:
